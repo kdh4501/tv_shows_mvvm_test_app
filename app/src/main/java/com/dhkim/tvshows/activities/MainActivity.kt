@@ -1,10 +1,10 @@
 package com.dhkim.tvshows.activities
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.dhkim.tvshows.R
 import com.dhkim.tvshows.adapters.TVShowsAdapter
 import com.dhkim.tvshows.databinding.ActivityMainBinding
@@ -16,6 +16,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mostPopularTVShowViewModel: MostPopularTVShowViewModel
     private var tvShows: MutableList<TVShow> = mutableListOf()
     private lateinit var tvShowsAdapter: TVShowsAdapter
+    private var currentPage: Int = 1
+    private var totalAvailablePages: Int = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -28,20 +31,41 @@ class MainActivity : AppCompatActivity() {
         mostPopularTVShowViewModel = ViewModelProvider(this)[MostPopularTVShowViewModel::class.java]
         tvShowsAdapter = TVShowsAdapter(tvShows)
         binding.tvShowsRecyclerView.adapter = tvShowsAdapter
+        binding.tvShowsRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!binding.tvShowsRecyclerView.canScrollVertically(1)) {
+                    if (currentPage <= totalAvailablePages) {
+                        currentPage += 1;
+                        getMostPopularTVShows()
+                    }
+                }
+            }
+        })
         getMostPopularTVShows()
     }
 
-    fun getMostPopularTVShows() {
-        binding.isLoading = true
-        mostPopularTVShowViewModel.getMostPopularTVShow(0).observe(this) {
+    private fun getMostPopularTVShows() {
+        toggleLoading()
+        mostPopularTVShowViewModel.getMostPopularTVShow(currentPage).observe(this) {
                 mostPopularTVShowsResponse ->
-            binding.isLoading = false
+            toggleLoading()
             if (mostPopularTVShowsResponse != null) {
+                totalAvailablePages = mostPopularTVShowsResponse.totalPages
                 if (mostPopularTVShowsResponse.tvShow != null) {
+                    var oldCount: Int = tvShows.size
                     tvShows.addAll(mostPopularTVShowsResponse.tvShow)
-                    tvShowsAdapter.notifyDataSetChanged()
+                    tvShowsAdapter.notifyItemRangeInserted(oldCount, tvShows.size)
                 }
             }
+        }
+    }
+
+    private fun toggleLoading() {
+        if (currentPage == 1) {
+            binding.isLoading = !(binding.isLoading != null && binding.isLoading as Boolean)
+        } else {
+            binding.isLoadingMore = !(binding.isLoadingMore != null && binding.isLoadingMore as Boolean)
         }
     }
 }
