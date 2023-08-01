@@ -6,11 +6,12 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import java.lang.Exception
 
-class BindingAdapters {
+object BindingAdapters {
 
     @BindingAdapter("android:imageURL")
+    @JvmStatic
     fun setImageURL(imageView: ImageView, URL: String) {
-//        print("dhkim111 $URL")
+        print("dhkim111 $URL")
         try {
             imageView.alpha = 0f
             Picasso.get().load(URL).noFade().into(imageView, object:Callback {
