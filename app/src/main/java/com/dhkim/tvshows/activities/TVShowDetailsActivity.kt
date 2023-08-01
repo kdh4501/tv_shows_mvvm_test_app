@@ -1,14 +1,13 @@
 package com.dhkim.tvshows.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.dhkim.tvshows.R
-import com.dhkim.tvshows.databinding.ActivityMainBinding
+import com.dhkim.tvshows.adapters.ImageSliderAdapter
 import com.dhkim.tvshows.databinding.ActivityTvshowDetailsBinding
-import com.dhkim.tvshows.viewmodels.MostPopularTVShowViewModel
 import com.dhkim.tvshows.viewmodels.TVShowDetailsViewModel
 
 class TVShowDetailsActivity : AppCompatActivity() {
@@ -32,7 +31,18 @@ class TVShowDetailsActivity : AppCompatActivity() {
         var tvShowId: String = intent.getIntExtra("id", -1).toString()
         tvShowDetailsViewModel.getTVShowDetails(tvShowId).observe(this) { tvShowDetailsPesponse ->
             binding.isLoading = false
-            Toast.makeText(this, tvShowDetailsPesponse?.getTvShowDetail()?.url, Toast.LENGTH_SHORT).show()
+            if (tvShowDetailsPesponse?.getTvShowDetail() != null) {
+                if (tvShowDetailsPesponse.getTvShowDetail().pictures != null) {
+                    loadImageSlider(tvShowDetailsPesponse.getTvShowDetail().pictures)
+                }
+            }
         }
+    }
+
+    private fun loadImageSlider(sliderImages: List<String>) {
+        binding.sliderViewPager.offscreenPageLimit = 1
+        binding.sliderViewPager.adapter = ImageSliderAdapter(sliderImages)
+        binding.sliderViewPager.visibility = View.VISIBLE
+        binding.viewFadingEdge.visibility = View.VISIBLE
     }
 }

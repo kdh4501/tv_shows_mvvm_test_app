@@ -25,7 +25,6 @@ class MostPopularTVSHowsRepository {
                 override fun onFailure(call: Call<TVShowsResponse>, t: Throwable) {
                     data.value = null
                 }
-
             })
             return data
         } catch (e: Exception) {
