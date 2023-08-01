@@ -14,4 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "TV Shows"
 include ':app'
-include ':data'
