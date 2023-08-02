@@ -46,6 +46,7 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 binding.tvShowImageURL =
                     tvShowDetailsPesponse.getTvShowDetail().imagePath
                 binding.imageTVShow.visibility = View.VISIBLE
+                loadBasicTVShowDetails()
             }
         }
     }
@@ -97,5 +98,17 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    private fun loadBasicTVShowDetails() {
+        binding.tvShowName = intent.getStringExtra("name")
+        binding.networkCountry = intent.getStringExtra("network") + " (" +
+                intent.getStringExtra("country") + ")"
+        binding.status = intent.getStringExtra("status")
+        binding.startedDate = intent.getStringExtra("startDate")
+        binding.textName.visibility = View.VISIBLE
+        binding.textNetworkCountry.visibility = View.VISIBLE
+        binding.textStatus.visibility = View.VISIBLE
+        binding.textStarted.visibility = View.VISIBLE
     }
 }
