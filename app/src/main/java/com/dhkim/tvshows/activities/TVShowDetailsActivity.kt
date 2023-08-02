@@ -29,6 +29,9 @@ class TVShowDetailsActivity : AppCompatActivity() {
     private fun doInit() {
         tvShowDetailsViewModel = ViewModelProvider(this)[TVShowDetailsViewModel::class.java]
         getTVShowDetails()
+        binding.imageBack.setOnClickListener{
+            onBackPressed()
+        }
     }
 
     private fun getTVShowDetails() {
