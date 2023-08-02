@@ -43,6 +43,9 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 if (tvShowDetailsPesponse.getTvShowDetail().pictures != null) {
                     loadImageSlider(tvShowDetailsPesponse.getTvShowDetail().pictures)
                 }
+                binding.tvShowImageURL =
+                    tvShowDetailsPesponse.getTvShowDetail().imagePath
+                binding.imageTVShow.visibility = View.VISIBLE
             }
         }
     }
