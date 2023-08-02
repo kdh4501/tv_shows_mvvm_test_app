@@ -1,12 +1,14 @@
 package com.dhkim.tvshows.activities
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
@@ -46,6 +48,23 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 binding.tvShowImageURL =
                     tvShowDetailsPesponse.getTvShowDetail().imagePath
                 binding.imageTVShow.visibility = View.VISIBLE
+                binding.description = HtmlCompat.fromHtml(
+                    tvShowDetailsPesponse.getTvShowDetail().description,
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                ).toString()
+                binding.textDescription.visibility = View.VISIBLE
+                binding.textReadMore.visibility = View.VISIBLE
+                binding.textReadMore.setOnClickListener {
+                    if (binding.textReadMore.text.toString() == "Read More") {
+                        binding.textDescription.maxLines = Int.MAX_VALUE
+                        binding.textDescription.ellipsize = null
+                        binding.textReadMore.text = getString(R.string.read_less)
+                    } else {
+                        binding.textDescription.maxLines = 4
+                        binding.textDescription.ellipsize = TextUtils.TruncateAt.END
+                        binding.textReadMore.text = getString(R.string.read_more)
+                    }
+                }
                 loadBasicTVShowDetails()
             }
         }
