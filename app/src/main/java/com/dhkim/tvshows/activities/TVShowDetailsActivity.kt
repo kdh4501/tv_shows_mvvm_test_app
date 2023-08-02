@@ -16,6 +16,7 @@ import com.dhkim.tvshows.R
 import com.dhkim.tvshows.adapters.ImageSliderAdapter
 import com.dhkim.tvshows.databinding.ActivityTvshowDetailsBinding
 import com.dhkim.tvshows.viewmodels.TVShowDetailsViewModel
+import java.util.Locale
 
 class TVShowDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTvshowDetailsBinding
@@ -65,6 +66,19 @@ class TVShowDetailsActivity : AppCompatActivity() {
                         binding.textReadMore.text = getString(R.string.read_more)
                     }
                 }
+                binding.rating = String.format(
+                    Locale.getDefault(), "%.2f",
+                    tvShowDetailsPesponse.getTvShowDetail().rating.toDouble()
+                )
+                if (tvShowDetailsPesponse.tvShowDetails.genres != null) {
+                    binding.genre = tvShowDetailsPesponse.getTvShowDetail().genres[0]
+                } else {
+                    binding.genre = "N/A"
+                }
+                binding.runtime = tvShowDetailsPesponse.getTvShowDetail().runtime + " Min"
+                binding.viewDivider1.visibility = View.VISIBLE
+                binding.layoutMisc.visibility = View.VISIBLE
+                binding.viewDivider2.visibility = View.VISIBLE
                 loadBasicTVShowDetails()
             }
         }
