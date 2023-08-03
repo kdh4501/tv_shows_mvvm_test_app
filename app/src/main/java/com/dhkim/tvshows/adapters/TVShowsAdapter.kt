@@ -23,7 +23,6 @@ class TVShowsAdapter(
             parent,
             false
         )
-//        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_tv_show, parent, false)
         return TVShowViewHolder(binding)
     }
 
