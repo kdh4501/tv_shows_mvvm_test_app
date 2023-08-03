@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
@@ -26,6 +27,9 @@ import com.dhkim.tvshows.models.TVShow
 import com.dhkim.tvshows.viewmodels.TVShowDetailsViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import java.util.Locale
 
 class TVShowDetailsActivity : AppCompatActivity() {
@@ -127,6 +131,18 @@ class TVShowDetailsActivity : AppCompatActivity() {
                     }
                     episodesBottomSheetDialog.show()
                 }
+
+                binding.imageWatchlist.setOnClickListener {
+                    var compositeDisposable: CompositeDisposable = CompositeDisposable()
+                    compositeDisposable.add(tvShowDetailsViewModel.addToWatchlist(tvShow)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe{
+                            binding.imageWatchlist.setImageResource(R.drawable.ic_added)
+                            Toast.makeText(applicationContext, "Added to watchlist", Toast.LENGTH_SHORT).show()
+                        })
+                }
+                binding.imageWatchlist.visibility = View.VISIBLE
                 loadBasicTVShowDetails()
             }
         }
