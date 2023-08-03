@@ -1,11 +1,14 @@
 package com.dhkim.tvshows.activities
 
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -15,14 +18,20 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.dhkim.tvshows.R
+import com.dhkim.tvshows.adapters.EpisodesAdapter
 import com.dhkim.tvshows.adapters.ImageSliderAdapter
 import com.dhkim.tvshows.databinding.ActivityTvshowDetailsBinding
+import com.dhkim.tvshows.databinding.LayoutEpisodesBottomSheetBinding
 import com.dhkim.tvshows.viewmodels.TVShowDetailsViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.util.Locale
 
 class TVShowDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTvshowDetailsBinding
     private lateinit var tvShowDetailsViewModel: TVShowDetailsViewModel
+    private lateinit var episodesBottomSheetDialog: BottomSheetDialog
+    private lateinit var layoutEpisodesBottomSheetBinding: LayoutEpisodesBottomSheetBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +97,36 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 }
                 binding.buttonWebsite.visibility = View.VISIBLE
                 binding.buttonEpisodes.visibility = View.VISIBLE
+                binding.buttonEpisodes.setOnClickListener {
+//                    if (episodesBottomSheetDialog == null) {
+//
+//                    }
+                    episodesBottomSheetDialog = BottomSheetDialog(this)
+                    layoutEpisodesBottomSheetBinding = DataBindingUtil.inflate(
+                        LayoutInflater.from(this),
+                        R.layout.layout_episodes_bottom_sheet,
+                        findViewById(R.id.episodesContainer),
+                        false
+                    )
+                    episodesBottomSheetDialog.setContentView(layoutEpisodesBottomSheetBinding.root)
+                    layoutEpisodesBottomSheetBinding.episodesRecyclerView.adapter =
+                        EpisodesAdapter(tvShowDetailsPesponse.getTvShowDetail().episodes)
+                    layoutEpisodesBottomSheetBinding.textTitle.text =
+                        String.format("Episodes | %s", intent.getStringExtra("name"))
+                    layoutEpisodesBottomSheetBinding.imageClose.setOnClickListener {
+                        episodesBottomSheetDialog.dismiss()
+                    }
+                    // Optional section start
+                    val frameLayout: FrameLayout? = episodesBottomSheetDialog.findViewById(
+                        com.google.android.material.R.id.design_bottom_sheet
+                    )
+                    if (frameLayout != null) {
+                        val bottomSheetBehavior: BottomSheetBehavior<View> = BottomSheetBehavior.from(frameLayout)
+                        bottomSheetBehavior.peekHeight = Resources.getSystem().displayMetrics.heightPixels
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    }
+                    episodesBottomSheetDialog.show()
+                }
                 loadBasicTVShowDetails()
             }
         }
