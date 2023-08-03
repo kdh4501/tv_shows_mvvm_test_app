@@ -22,6 +22,7 @@ import com.dhkim.tvshows.adapters.EpisodesAdapter
 import com.dhkim.tvshows.adapters.ImageSliderAdapter
 import com.dhkim.tvshows.databinding.ActivityTvshowDetailsBinding
 import com.dhkim.tvshows.databinding.LayoutEpisodesBottomSheetBinding
+import com.dhkim.tvshows.models.TVShow
 import com.dhkim.tvshows.viewmodels.TVShowDetailsViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -32,6 +33,7 @@ class TVShowDetailsActivity : AppCompatActivity() {
     private lateinit var tvShowDetailsViewModel: TVShowDetailsViewModel
     private lateinit var episodesBottomSheetDialog: BottomSheetDialog
     private lateinit var layoutEpisodesBottomSheetBinding: LayoutEpisodesBottomSheetBinding
+    private lateinit var tvShow: TVShow
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,15 +44,16 @@ class TVShowDetailsActivity : AppCompatActivity() {
 
     private fun doInit() {
         tvShowDetailsViewModel = ViewModelProvider(this)[TVShowDetailsViewModel::class.java]
-        getTVShowDetails()
         binding.imageBack.setOnClickListener{
             onBackPressed()
         }
+        tvShow = intent.getSerializableExtra("tvShow") as TVShow
+        getTVShowDetails()
     }
 
     private fun getTVShowDetails() {
         binding.isLoading = true
-        var tvShowId: String = intent.getIntExtra("id", -1).toString()
+        var tvShowId: String = tvShow.id.toString()
         tvShowDetailsViewModel.getTVShowDetails(tvShowId).observe(this) { tvShowDetailsPesponse ->
             binding.isLoading = false
             if (tvShowDetailsPesponse?.getTvShowDetail() != null) {
@@ -98,9 +101,6 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 binding.buttonWebsite.visibility = View.VISIBLE
                 binding.buttonEpisodes.visibility = View.VISIBLE
                 binding.buttonEpisodes.setOnClickListener {
-//                    if (episodesBottomSheetDialog == null) {
-//
-//                    }
                     episodesBottomSheetDialog = BottomSheetDialog(this)
                     layoutEpisodesBottomSheetBinding = DataBindingUtil.inflate(
                         LayoutInflater.from(this),
@@ -112,7 +112,7 @@ class TVShowDetailsActivity : AppCompatActivity() {
                     layoutEpisodesBottomSheetBinding.episodesRecyclerView.adapter =
                         EpisodesAdapter(tvShowDetailsPesponse.getTvShowDetail().episodes)
                     layoutEpisodesBottomSheetBinding.textTitle.text =
-                        String.format("Episodes | %s", intent.getStringExtra("name"))
+                        String.format("Episodes | %s", tvShow.name)
                     layoutEpisodesBottomSheetBinding.imageClose.setOnClickListener {
                         episodesBottomSheetDialog.dismiss()
                     }
@@ -182,11 +182,11 @@ class TVShowDetailsActivity : AppCompatActivity() {
     }
 
     private fun loadBasicTVShowDetails() {
-        binding.tvShowName = intent.getStringExtra("name")
-        binding.networkCountry = intent.getStringExtra("network") + " (" +
-                intent.getStringExtra("country") + ")"
-        binding.status = intent.getStringExtra("status")
-        binding.startedDate = intent.getStringExtra("startDate")
+        binding.tvShowName = tvShow.name
+        binding.networkCountry = tvShow.network + " (" +
+                tvShow.country + ")"
+        binding.status = tvShow.status
+        binding.startedDate = tvShow.startDate
         binding.textName.visibility = View.VISIBLE
         binding.textNetworkCountry.visibility = View.VISIBLE
         binding.textStatus.visibility = View.VISIBLE

@@ -72,13 +72,8 @@ class MainActivity : AppCompatActivity(), TVShowListener {
     }
 
     override fun onTVShowClicked(tvShow: TVShow) {
-        var intent: Intent = Intent(applicationContext, TVShowDetailsActivity::class.java)
-        intent.putExtra("id", tvShow.id)
-        intent.putExtra("name", tvShow.name)
-        intent.putExtra("startDate", tvShow.startDate)
-        intent.putExtra("country", tvShow.country)
-        intent.putExtra("network", tvShow.network)
-        intent.putExtra("status", tvShow.status)
+        var intent = Intent(applicationContext, TVShowDetailsActivity::class.java)
+        intent.putExtra("tvShow", tvShow)
         startActivity(intent)
     }
 }
