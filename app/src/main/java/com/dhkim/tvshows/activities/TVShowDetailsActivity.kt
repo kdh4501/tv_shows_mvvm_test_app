@@ -1,5 +1,7 @@
 package com.dhkim.tvshows.activities
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
@@ -79,6 +81,13 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 binding.viewDivider1.visibility = View.VISIBLE
                 binding.layoutMisc.visibility = View.VISIBLE
                 binding.viewDivider2.visibility = View.VISIBLE
+                binding.buttonWebsite.setOnClickListener {
+                    var intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(tvShowDetailsPesponse.getTvShowDetail().url)
+                    startActivity(intent)
+                }
+                binding.buttonWebsite.visibility = View.VISIBLE
+                binding.buttonEpisodes.visibility = View.VISIBLE
                 loadBasicTVShowDetails()
             }
         }
