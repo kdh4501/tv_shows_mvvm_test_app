@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(), TVShowListener {
         doInit()
     }
 
-    fun doInit() {
+    private fun doInit() {
         binding.tvShowsRecyclerView.setHasFixedSize(true)
         mostPopularTVShowViewModel = ViewModelProvider(this)[MostPopularTVShowViewModel::class.java]
         tvShowsAdapter = TVShowsAdapter(tvShows, this)
@@ -44,6 +44,9 @@ class MainActivity : AppCompatActivity(), TVShowListener {
                 }
             }
         })
+        binding.imageWatchlist.setOnClickListener {
+            startActivity(Intent(applicationContext, WatchlistActivity::class.java))
+        }
         getMostPopularTVShows()
     }
 
