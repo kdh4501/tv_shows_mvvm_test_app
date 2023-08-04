@@ -12,6 +12,7 @@ import com.dhkim.tvshows.databinding.ActivityWatchlistBinding
 import com.dhkim.tvshows.listeners.WatchlistListener
 import com.dhkim.tvshows.models.TVShow
 import com.dhkim.tvshows.viewmodels.WatchlistViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
@@ -36,20 +37,19 @@ class WatchlistActivity : AppCompatActivity(), WatchlistListener {
     private fun loadWatchlist() {
         binding.isLoading = true
         var compositeDisposable = CompositeDisposable()
-        compositeDisposable.add(viewModel.loadWatchlist().subscribeOn(Schedulers.computation())
+        compositeDisposable.add(viewModel.loadWatchlist()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe { tvShows ->
-                runOnUiThread {
-                    binding.isLoading = false
-                    if (watchlist.size > 0) {
-                        watchlist.clear()
-                    }
-                    watchlist.addAll(tvShows)
-                    println("000000  ${tvShows}")
-                    watchlistAdapter = WatchlistAdapter(tvShows, this)
-                    binding.watchlistRecyclerView.adapter = watchlistAdapter
-                    binding.watchlistRecyclerView.visibility = View.VISIBLE
-                    compositeDisposable.dispose()
+                binding.isLoading = false
+                if (watchlist.isNotEmpty()) {
+                    watchlist.clear()
                 }
+                watchlist.addAll(tvShows)
+                watchlistAdapter = WatchlistAdapter(tvShows, this)
+                binding.watchlistRecyclerView.adapter = watchlistAdapter
+                binding.watchlistRecyclerView.visibility = View.VISIBLE
+                compositeDisposable.dispose()
             }
         )
     }
@@ -66,5 +66,21 @@ class WatchlistActivity : AppCompatActivity(), WatchlistListener {
     }
 
     override fun removeTVShowFromWatchlist(tvShow: TVShow, position: Int) {
+        if (watchlist.isEmpty() || position < 0 || position >= watchlist.size) {
+            // 빈 리스트이거나 올바르지 않은 position일 경우 처리
+            return
+        }
+
+        var compositeDisposableForDelete = CompositeDisposable()
+        compositeDisposableForDelete.add(viewModel.removeTVShowFromWatchlist(tvShow)
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                watchlist.removeAt(position)
+                watchlistAdapter.notifyItemRemoved(position)
+                watchlistAdapter.notifyItemRangeChanged(position, watchlistAdapter.itemCount)
+                loadWatchlist()     // remove해도 adapter의 아이템이 갱신 안되어서 호출했음.. 좀 더 연구 필요
+                compositeDisposableForDelete.dispose()
+            })
     }
 }

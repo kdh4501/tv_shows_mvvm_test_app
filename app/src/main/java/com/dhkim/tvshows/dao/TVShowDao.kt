@@ -19,6 +19,6 @@ interface TVShowDao {
     fun addToWatchlist(tvShow: TVShow): Completable
 
     @Delete
-    fun removeFromWatchlist(tvShow: TVShow)
+    fun removeFromWatchlist(tvShow: TVShow) : Completable
 
 }
