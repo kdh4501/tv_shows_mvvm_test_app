@@ -18,4 +18,11 @@ interface ApiService {
         @Query(value = "q", encoded = true)
         tvShowId: String,
     ): Call<TVShowDetailsResponse>
+
+    @GET("search")
+    fun searchTVShow(
+        @Query("q") query: String,
+        @Query("page") page: Int
+    ): Call<TVShowsResponse>
+
 }
