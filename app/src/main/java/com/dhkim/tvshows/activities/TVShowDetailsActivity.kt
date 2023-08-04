@@ -38,6 +38,7 @@ class TVShowDetailsActivity : AppCompatActivity() {
     private lateinit var episodesBottomSheetDialog: BottomSheetDialog
     private lateinit var layoutEpisodesBottomSheetBinding: LayoutEpisodesBottomSheetBinding
     private lateinit var tvShow: TVShow
+    private var isTVShowAvailableInWatchlist: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +53,20 @@ class TVShowDetailsActivity : AppCompatActivity() {
             onBackPressed()
         }
         tvShow = intent.getSerializableExtra("tvShow") as TVShow
+        checkTVShowInWatchlist()
         getTVShowDetails()
+    }
+
+    private fun checkTVShowInWatchlist() {
+        var compositeDisposable = CompositeDisposable()
+        compositeDisposable.add(tvShowDetailsViewModel.getTVShowFromWatchlist(tvShow.id.toString())
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { tvShow ->
+                isTVShowAvailableInWatchlist = true
+                binding.imageWatchlist.setImageResource(R.drawable.ic_added)
+                compositeDisposable.dispose()
+            })
     }
 
     private fun getTVShowDetails() {
@@ -133,14 +147,27 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 }
 
                 binding.imageWatchlist.setOnClickListener {
-                    var compositeDisposable: CompositeDisposable = CompositeDisposable()
-                    compositeDisposable.add(tvShowDetailsViewModel.addToWatchlist(tvShow)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe{
-                            binding.imageWatchlist.setImageResource(R.drawable.ic_added)
-                            Toast.makeText(applicationContext, "Added to watchlist", Toast.LENGTH_SHORT).show()
-                        })
+                    var compositeDisposable = CompositeDisposable()
+                    if (isTVShowAvailableInWatchlist) {
+                        compositeDisposable.add(tvShowDetailsViewModel.removeTVShowFromWatchlist(tvShow)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe{
+                                isTVShowAvailableInWatchlist = false
+                                binding.imageWatchlist.setImageResource(R.drawable.ic_watchlist)
+                                Toast.makeText(applicationContext, "Removed from watchlist", Toast.LENGTH_SHORT).show()
+                                compositeDisposable.dispose()
+                            })
+                    } else {
+                        compositeDisposable.add(tvShowDetailsViewModel.addToWatchlist(tvShow)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe{
+                                binding.imageWatchlist.setImageResource(R.drawable.ic_added)
+                                Toast.makeText(applicationContext, "Added to watchlist", Toast.LENGTH_SHORT).show()
+                                compositeDisposable.dispose()
+                            })
+                    }
                 }
                 binding.imageWatchlist.visibility = View.VISIBLE
                 loadBasicTVShowDetails()

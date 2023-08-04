@@ -8,6 +8,7 @@ import com.dhkim.tvshows.models.TVShow
 import com.dhkim.tvshows.network.response.TVShowDetailsResponse
 import com.dhkim.tvshows.repositories.TVShowDetailsRepository
 import io.reactivex.Completable
+import io.reactivex.Flowable
 
 class TVShowDetailsViewModel(application: Application) : AndroidViewModel(application) {
     private val mostPopularTVShowsRepository: TVShowDetailsRepository = TVShowDetailsRepository()
@@ -19,5 +20,13 @@ class TVShowDetailsViewModel(application: Application) : AndroidViewModel(applic
 
     fun addToWatchlist(tvShow: TVShow): Completable {
         return tvShowDatabase.tvShowDao().addToWatchlist(tvShow)
+    }
+
+    fun getTVShowFromWatchlist(tvShowId: String): Flowable<TVShow> {
+        return tvShowDatabase.tvShowDao().getTVShowFromWatchlist(tvShowId)
+    }
+
+    fun removeTVShowFromWatchlist(tvShow: TVShow): Completable {
+        return tvShowDatabase.tvShowDao().removeFromWatchlist(tvShow)
     }
 }
