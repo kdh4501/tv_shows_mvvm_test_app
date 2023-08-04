@@ -11,6 +11,7 @@ import com.dhkim.tvshows.adapters.WatchlistAdapter
 import com.dhkim.tvshows.databinding.ActivityWatchlistBinding
 import com.dhkim.tvshows.listeners.WatchlistListener
 import com.dhkim.tvshows.models.TVShow
+import com.dhkim.tvshows.utils.TempDataHolder
 import com.dhkim.tvshows.viewmodels.WatchlistViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -32,6 +33,7 @@ class WatchlistActivity : AppCompatActivity(), WatchlistListener {
     private fun doInit() {
         viewModel = ViewModelProvider(this)[WatchlistViewModel::class.java]
         binding.imageBack.setOnClickListener{onBackPressed()}
+        loadWatchlist()
     }
 
     private fun loadWatchlist() {
@@ -56,7 +58,10 @@ class WatchlistActivity : AppCompatActivity(), WatchlistListener {
 
     override fun onResume() {
         super.onResume()
-        loadWatchlist()
+        if (TempDataHolder.IS_WATCHLIST_UPDATED) {
+            loadWatchlist()
+            TempDataHolder.IS_WATCHLIST_UPDATED = false
+        }
     }
 
     override fun onTVShowClicked(tvShow: TVShow) {
