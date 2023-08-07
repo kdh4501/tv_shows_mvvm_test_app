@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), TVShowListener {
         binding.imageWatchlist.setOnClickListener {
             startActivity(Intent(applicationContext, WatchlistActivity::class.java))
         }
+        binding.imageSearch.setOnClickListener { startActivity(Intent(applicationContext, SearchActivity::class.java)) }
         getMostPopularTVShows()
     }
 
